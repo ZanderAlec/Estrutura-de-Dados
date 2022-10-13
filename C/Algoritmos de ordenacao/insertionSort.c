@@ -28,8 +28,10 @@ int main(){
 
     //a contagem começa a partir do segundo valor (v[1]), porque a comparação é feita com os elementos ANTES do índice atual.
     for(i = 1; i < 10; i++){
+
         aux = numeros[i]; //Guarda o valor atual.
-        for(contador = i; (contador>0) && (aux < numeros[contador-1]); contador-- ){  //compara enquanto o valor atual for menor que os anteriores a ele.
+
+        for(contador = i; (contador>=0) && (aux < numeros[contador-1]); contador-- ){  //compara enquanto o valor atual for menor que os anteriores a ele.
             numeros[contador] = numeros[contador-1]; //Move todos os valores maiores que numeros[contador] uma casa a frente.
         }   
         numeros[contador] = aux; //Insere o valor no lugar do ultimo elemento maior que o valor..
