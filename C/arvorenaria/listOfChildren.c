@@ -133,11 +133,19 @@ lista_arvore * procuraPai(lista_arvore * raiz, int index_pai){
 
     lista_arvore * indice = raiz;
 
-    for(int i = 0; i > index_pai; i++){
+    if(index_pai == 0){
+        return raiz;
+    }
+
+    for(int i = 0; i <= index_pai; i++){
 
         if(indice == NULL){
             printf("Esse pai não existe!\n");
             return NULL;
+        }
+        
+        if(i == index_pai){
+            break;
         }
 
         indice = indice->proximo;
@@ -147,13 +155,15 @@ lista_arvore * procuraPai(lista_arvore * raiz, int index_pai){
 }
 
 //Procura um valor na lista e retorna, se encontrar, seu indice
-int buscaIndicelista(lista_arvore * raiz, int valor){
+int buscaIndicelista(lista_arvore * raiz, int valor, int index_pai){
     lista_arvore * temp = raiz;
     
     int indice = 0;
 
     while(temp != NULL){
-         if(temp->noArvore->valor == valor){
+
+        //O index pai é necessário para não retonrar o index errado, pois pode haver repetição na lista
+        if(temp->noArvore->valor == valor &&  temp->noArvore->index_pai == index_pai){
             break;
         }
         
@@ -194,7 +204,7 @@ void  inserirNoArvore(lista_arvore * raiz, int valor, int index_pai){
 
 
     //adiciona esse indice a lista de filhos do pai informado:-------
-    int indiceFilho =  buscaIndicelista(raiz, valor);
+    int indiceFilho =  buscaIndicelista(raiz, valor, index_pai);
    
     //Verifica se ja existe uma lista de filhos, se não existir cria uma
     if(pai->noArvore->lista_filhos != NULL){
@@ -261,23 +271,25 @@ void pertenceArvore(lista_arvore *raiz, int valorProcurado){
     }
 
     printf("O valor %d não percente a árvore\n", valorProcurado);
-
 }
+
 
 
 int main(){
 
-    lista_arvore* raiz = criaRaiz(2);
+    lista_arvore* raiz1 = criaRaiz(2);
+    lista_arvore* raiz2 = criaRaiz(6);
 
-
-    inserirNoArvore(raiz, 4, 0);
-    inserirNoArvore(raiz, 3, 0);
-    inserirNoArvore(raiz, 77, 1);
-    inserirNoArvore(raiz, 22, 0);
+    inserirNoArvore(raiz1, 7, 0);
+    inserirNoArvore(raiz1, 5, 1);
+    inserirNoArvore(raiz1, 2, 1);
+    inserirNoArvore(raiz1, 33, 2);
+    inserirNoArvore(raiz1, 423, 0);
+ 
     
-    imprimeArvore(raiz);
+    imprimeArvore(raiz1);
 
-    pertenceArvore(raiz, 22);
+    // pertenceArvore(raiz1, 22);
 
     return 0;
 }
