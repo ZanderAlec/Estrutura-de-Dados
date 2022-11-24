@@ -34,7 +34,6 @@ no_filho * criaItem(int indice){
     return novo;
 }
 
-
 //Insere um item na lista de filhos de um nó
 void inserirItemLista(no_filho * primeiro, int indice){
 
@@ -240,6 +239,30 @@ void imprimeArvore(lista_arvore* raiz){
 
 //Operações-----------------------------------------------------------------------
 
+//Verifica se um valor pertence a árvore:
+void pertenceArvore(lista_arvore *raiz, int valorProcurado){
+
+    if(raiz == NULL){
+        printf("A lista ainda não foi iniciada!\n");
+    }
+
+    lista_arvore * temp = raiz;
+
+    int indice = 0;
+
+    while(temp != NULL){
+        if(temp->noArvore->valor == valorProcurado){
+            printf("O valor %d percente a árvore e está no indice %d\n", valorProcurado, indice);
+            return;
+        }
+
+        indice++;
+        temp = temp->proximo;
+    }
+
+    printf("O valor %d não percente a árvore\n", valorProcurado);
+
+}
 
 
 int main(){
@@ -254,7 +277,7 @@ int main(){
     
     imprimeArvore(raiz);
 
-
+    pertenceArvore(raiz, 22);
 
     return 0;
 }
