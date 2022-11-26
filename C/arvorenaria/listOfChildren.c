@@ -1,295 +1,162 @@
 #include <stdio.h>
 #include <stdlib.h>
-
 /*
     Nessa variação de implementação cada nó da árvore corresponderá a um ÍNDICE da linked LIST e cada nó possuirá um ponteiro pra uma linked list com indices de todos os seus filhos.
-    Cada nó possuirá um valor, um ponteiro para seu pai e um ponteiro para um vetor que contem a lista de todos os filhos desse nó.
-
+    Cada nó possuirá um valor, um ponteiro para seu pai, um ponteiro para um vetor que contem a lista de todos os filhos desse nó e um ponteiro para o próximo elemento da lista de elementos.
 */
 
-//IMPLEMENTAÇÃO DA ÁRVORE-------------------------------------------------------------------
-//linked list========================================================
+//Lista linkada:(filho dos nós)
+typedef struct IL{
+    //Endereço do elemento(No) contido nesse índice
+    struct no * filho; 
+    //Endereço para o próximo indice filho
+    struct IL * proximo;
+}itemLista;
 
-//Essa lista linkada é a lista dos filhos de cada nó da árvore
-typedef struct nof{
+//NO/LISTA LINKADA
+typedef struct no{
+    //Valor do no
+    int valor;  
+    //ponteiro para o pai desse no
+    struct no * pai; 
+    //Ponteiro para o primeiro indice da lista de filhos
+    itemLista * listaFilhos;
+    //Proximo nó da lista de nós
+    struct no * proximo;
+}NO;
 
-    int indice;
-    struct nof * proximo; 
+//cria um item da lista de filhos
+itemLista* criaItemlista(NO* filho){
+    itemLista * novo = (itemLista*) malloc(sizeof(itemLista));
 
-}no_filho;
-
-
-//Cria um novo item no_filho e retorna esse item
-no_filho * criaItem(int indice){
-    
-    no_filho * novo = (no_filho *)malloc(sizeof(no_filho));  
-
-    if(novo  == NULL){
+    if(novo == NULL){
+        printf("Não há espaço suficiente pra criar a lista!\n");
         return NULL;
     }
 
-    novo->indice = indice;
+    novo->filho = filho;
+    novo->proximo = NULL;
+
+    return novo;
+}   
+
+//Insere um no na lista de filhos (ja criada)
+void insereItemLista(itemLista * primeiroFilho,  NO* filho){
+
+    itemLista * item = primeiroFilho;
+
+    while(item->proximo != NULL){
+        item = item->proximo;
+    }
+
+    item->proximo = criaItemlista(filho);
+}
+
+//Cria um nó qualquer
+NO * criaNo(int valor, NO * pai){
+
+    NO * novo = (NO*) malloc(sizeof(NO));
+
+    if(novo == NULL){
+        return NULL;
+    }
+
+    novo->valor = valor;
+    novo->pai = pai;
+    novo->listaFilhos = NULL;
     novo->proximo = NULL;
 
     return novo;
 }
 
-//Insere um item na lista de filhos de um nó
-void inserirItemLista(no_filho * primeiro, int indice){
-
-    if(primeiro != NULL){
-        
-        if(primeiro->proximo == NULL){
-            primeiro->proximo = criaItem(indice);
-            return;
-        }
-
-        no_filho * item =  primeiro->proximo;
-
-        while(item->proximo!=NULL){
-            item = item->proximo;
-        }
-
-        item->proximo = criaItem(indice);
-    }
+//Cria o nó raiz
+NO * iniciaArvore(int valor){
+    criaNo(valor, NULL);
 }
 
-//Imprime a lista linkada de filhos
-void imprimeLista(no_filho * primeiro){
+//Recebe o valor do nó pai, procura sua posição e retorna essa posição.
+NO * buscaPai(int valor, NO* raiz){
+    NO * indice = raiz;
 
-    if(primeiro != NULL){
-        
-        printf("|%d| ", primeiro->indice);
-
-        imprimeLista(primeiro->proximo);
-        
-    }
-    printf("\n");
-
-}
-
-//ÁRVORE======================================================
-
-//Nó da árvore:
-typedef struct NO{
-    int valor;
-    int index_pai;
-    no_filho * lista_filhos;
-}no;
-
-//Lista linkada que guardará os nós da árvore
-typedef struct listA{
-    struct NO * noArvore;
-    struct listA* proximo;
-
-}lista_arvore;
-
-// cria o nó da arvore
-no* criaNoArvore(int valor, int index_pai ){
-
-    no * novo = (no* ) malloc(sizeof(no));
-
-    if(novo == NULL){
-        return NULL;
-    }
-    
-    novo->valor = valor;
-
-    //Se index for -1 então é o primeiro nó na arvore e o pai é null
-    if(index_pai == -1){
-        novo->index_pai = -1;
-    }else{
-        novo->index_pai = index_pai;
-    }   
-    
-    novo->lista_filhos = NULL;
-
-    return novo;
-}
-
-//Cria um novo indice na linked list de nós e insere o nó nesse indice
-lista_arvore * criaIndiceArvore(int valor, int index_pai){
-
-    lista_arvore * novoIndice = (lista_arvore*) malloc(sizeof(lista_arvore));
-
-    if(novoIndice == NULL){
-        return NULL;
-    }
-
-    novoIndice->noArvore = criaNoArvore(valor, index_pai);
-
-    novoIndice->proximo = NULL;
-
-    return novoIndice;
-}
-
-//Cria o primeiro indice da lista de nós/primeiro nó da lista:
-lista_arvore * criaRaiz(int valor){
-   return criaIndiceArvore(valor, -1);
-}
-
-//Procura na lista encadeada o indice informado, se existir retorna um ponteiro pra essa posição
-lista_arvore * procuraPai(lista_arvore * raiz, int index_pai){
-
-    lista_arvore * indice = raiz;
-
-    if(index_pai == 0){
-        return raiz;
-    }
-
-    for(int i = 0; i <= index_pai; i++){
-
-        if(indice == NULL){
-            printf("Esse pai não existe!\n");
-            return NULL;
-        }
-        
-        if(i == index_pai){
-            break;
-        }
-
+    //Passa por todos os indices da lista até encontrar o pai ou até terminar a lista
+    while(indice->valor != valor && indice->pai != NULL){
         indice = indice->proximo;
     }
 
     return indice;
 }
 
-//Procura um valor na lista e retorna, se encontrar, seu indice
-int buscaIndicelista(lista_arvore * raiz, int valor, int index_pai){
-    lista_arvore * temp = raiz;
-    
-    int indice = 0;
 
-    while(temp != NULL){
+//insere um nó na arvore
+void insereNoArvore(NO * raiz, int valor, int valorPai){
 
-        //O index pai é necessário para não retonrar o index errado, pois pode haver repetição na lista
-        if(temp->noArvore->valor == valor &&  temp->noArvore->index_pai == index_pai){
-            break;
-        }
-        
-        indice++;
-        temp = temp->proximo;
-    }
+    NO * pai = buscaPai(valorPai, raiz);
 
-    return indice;
-}
-
-//Insere um novo nó na árvore (novo elemento na lista encadeada)
-void  inserirNoArvore(lista_arvore * raiz, int valor, int index_pai){
-
-    //Verifica se a arvore ja foi iniciada
-    if(raiz == NULL){
-        printf("A arvore ainda não foi inicializada!\n");
-        return;
-    }
-
-    //Verifica se o index do pai informado existe:
-    lista_arvore * pai = procuraPai(raiz, index_pai);
-
+    //Como o endereço do pai já é passado, ele não precisa ser procurado.
     if(pai == NULL){
-        printf("O indice informado não consta na lista.\n");
         return;
     }
 
-    // //Cria o novo indice na lista:
-    lista_arvore * indice = raiz;
+    NO * filho = criaNo(valor, pai); 
 
-    //procura um indice que não tenha proximo
+    //Se o pai ainda não tem nenhum filho, cria a lista de filhos.
+    if(pai->listaFilhos == NULL){
+        pai->listaFilhos = criaItemlista(filho);
+
+    //Se não, apenas insere o elemento.
+    }else{
+        insereItemLista(pai->listaFilhos, filho);
+    }
+
+    //procura um indice "vazio";
+    NO* indice = pai;
+
     while(indice->proximo != NULL){
         indice = indice->proximo;
     }
 
-    // //Cria o novo indice na arvore
-    indice->proximo = criaIndiceArvore(valor, index_pai);
+    //Coloca o elemento filho, criado agora, como um dos itens da lista:
+    indice->proximo = filho;
 
+}
 
-    //adiciona esse indice a lista de filhos do pai informado:-------
-    int indiceFilho =  buscaIndicelista(raiz, valor, index_pai);
-   
-    //Verifica se ja existe uma lista de filhos, se não existir cria uma
-    if(pai->noArvore->lista_filhos != NULL){
+//Imprime a arvore de maneira recursiva
+void imprimeArvore(NO * raiz){
 
-        inserirItemLista(pai->noArvore->lista_filhos, indiceFilho);
-    }else{
-        pai->noArvore->lista_filhos = criaItem(indiceFilho);
-    }
-
-}   
-
-void imprimeArvore(lista_arvore* raiz){
     if(raiz != NULL){
+        printf("%d( ", raiz->valor);
 
-            lista_arvore* pai = raiz;
+        itemLista * p  = raiz->listaFilhos;
 
-             printf("v  p  lf\n");
-
-            while(pai != NULL){
-                printf("|%d", pai->noArvore->valor);
-                printf("|%d", pai->noArvore->index_pai);
-
-                no_filho * filho =  pai->noArvore->lista_filhos;  
-
-                while(filho != NULL){
-                    printf("|%d", filho->indice);
-                    filho = filho->proximo;
-                }
-
-                if(filho == NULL){
-                    printf("|");
-                }
-                
-                printf("\n");
-                pai = pai->proximo;
-            }
-    }
-}
-
-
-
-
-//Operações-----------------------------------------------------------------------
-
-//Verifica se um valor pertence a árvore:
-void pertenceArvore(lista_arvore *raiz, int valorProcurado){
-
-    if(raiz == NULL){
-        printf("A lista ainda não foi iniciada!\n");
-    }
-
-    lista_arvore * temp = raiz;
-
-    int indice = 0;
-
-    while(temp != NULL){
-        if(temp->noArvore->valor == valorProcurado){
-            printf("O valor %d percente a árvore e está no indice %d\n", valorProcurado, indice);
-            return;
+        //Imprime todos os filhos
+        while(p != NULL){
+             imprimeArvore(p->filho);
+             p = p->proximo;
         }
-
-        indice++;
-        temp = temp->proximo;
     }
 
-    printf("O valor %d não percente a árvore\n", valorProcurado);
+    printf(")");
 }
 
 
+int main(){ 
 
-int main(){
+    NO * r1 = iniciaArvore(2);
+    NO * r2 = iniciaArvore(4);
 
-    lista_arvore* raiz1 = criaRaiz(2);
-    lista_arvore* raiz2 = criaRaiz(6);
+    insereNoArvore(r1, 5, 2);
+    insereNoArvore(r1, 6,  2);
+    insereNoArvore(r1, 25, 6);
+    insereNoArvore(r1, 1, 5);
 
-    inserirNoArvore(raiz1, 7, 0);
-    inserirNoArvore(raiz1, 5, 1);
-    inserirNoArvore(raiz1, 2, 1);
-    inserirNoArvore(raiz1, 33, 2);
-    inserirNoArvore(raiz1, 423, 0);
- 
-    
-    imprimeArvore(raiz1);
+    insereNoArvore(r2, 12, 4);
+    insereNoArvore(r2, 2,  4);
+    insereNoArvore(r2, 9, 12);
+    insereNoArvore(r2, 1, 4);
 
-    // pertenceArvore(raiz1, 22);
+    imprimeArvore(r1);
+    printf("\n");
+    imprimeArvore(r2);
 
     return 0;
 }
