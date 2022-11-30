@@ -79,7 +79,7 @@ NO * buscaPai(int valor, NO* raiz){
     NO * indice = raiz;
 
     //Passa por todos os indices da lista até encontrar o pai ou até terminar a lista
-    while(indice->valor != valor && indice->pai != NULL){
+    while(indice->valor != valor){
         indice = indice->proximo;
     }
 
@@ -88,6 +88,7 @@ NO * buscaPai(int valor, NO* raiz){
 
 
 //insere um nó na arvore
+//PS: A árvore não aceita repetição.
 void insereNoArvore(NO * raiz, int valor, int valorPai){
 
     NO * pai = buscaPai(valorPai, raiz);
@@ -139,6 +140,180 @@ void imprimeArvore(NO * raiz){
 }
 
 
+//Operações=============================================================================
+
+
+//Soma duas arvores de forma recursiva e o resultado é uma terceira árvore.
+//A soma só é realizada com elementos que estão no mesmo nível e existem nas duas árvores.
+NO * somaArvores(NO * r1, NO * r2, NO * rsoma){
+
+    //Verifica se algum dos nós é nulo (Não existem 2 nós nas duas arvores nesse nível, logo a soma n é feita)
+    if(r1 == NULL || r2 == NULL ){
+        return NULL;
+    }
+
+    //Se existirem, soma os valores e insere na terceira árvore o resultado:
+    int valor = r1->valor + r2->valor;
+
+    if(rsoma == NULL){
+        rsoma = iniciaArvore(valor);
+
+    }else{
+        insereNoArvore(rsoma, valor, (r1->pai->valor + r2->pai->valor));
+    }
+
+    //Verifica se os nós (r1 e r2) ambos possuem filhos/netos/... nos mesmos níveis:
+    itemLista * f1 = r1->listaFilhos; 
+    itemLista * f2=  r2->listaFilhos;
+
+    while(f1 != NULL && f2 != NULL){
+        somaArvores(f1->filho, f2->filho, rsoma);
+
+        f1 = f1->proximo;
+        f2 = f2->proximo;
+    }
+
+    //Retorna a árvore soma
+    return rsoma;
+}
+
+//UNIÃO--------------------------------------------------------------
+//Cria uma nova árvore identica a primeira
+NO * copiaArvore(NO* r1, NO* r2){
+
+    if(r1 == NULL){
+        return NULL;
+    }
+
+    if(r2 == NULL){
+        r2 = iniciaArvore(r1->valor);
+    }else{
+        insereNoArvore(r2, r1->valor, r1->pai->valor);
+    }
+
+    itemLista * p = r1->listaFilhos;
+
+    while(p != NULL){
+        copiaArvore(p->filho, r2);
+
+        p = p->proximo;
+    }
+
+    return r2;
+}
+
+//Essa função copia uma árvore, mas como filha de outra árvore.
+//Nessa representação de árvore, seria colocar as duas árvores, que estão em listas distintas, numa mesma lista.
+//Recebe a arvore que vai ser inserida e a arvore que receberá.
+NO *  insereArvore(NO * r1, NO* rUniao){
+
+    if(r1 == NULL){
+        return NULL;
+    }
+
+    //Se é o nó raiz, insere-o como filho da raiz da árvore rUniao
+    if(r1->pai == NULL){
+         insereNoArvore(rUniao, r1->valor, rUniao->valor);
+    
+    //Se não é o nó raiz, mantém a mesma relação de filhos que existia na árvore r1.
+    }else{
+        insereNoArvore(rUniao, r1->valor, r1->pai->valor);
+    }   
+   
+
+    itemLista * p = r1->listaFilhos;
+
+    while(p != NULL){
+        insereArvore(p->filho, rUniao);
+
+        p = p->proximo;
+    }
+
+    return rUniao;
+}
+
+//Essa função uni duas árvores
+//Funcionamento: pega a raiz da segunda árvore e insere como filha da primeira
+NO *  unirArvores(NO * r1, NO * r2){
+
+    if(r1 == NULL || r2 == NULL){
+        printf("É preciso duas árvores para realizar essa operação\n");
+        return NULL;
+    }
+
+    NO * rUniao = NULL;
+
+    //Copia a primeira arvore inteira:
+    rUniao = copiaArvore(r1, rUniao);
+    rUniao = insereArvore(r2, rUniao);
+
+    return rUniao;
+}
+
+
+//pertence------------------------------------------------------------
+//retorna 1 se o valor informado pertence a árvore, e 0 se não pertence.
+int pertenceArvore(int valor, NO *  raiz){
+
+    if(raiz == NULL){
+        return 0;
+    }
+
+    //Percorre "indice" a "Indice" da lista buscando o valor:
+    while(raiz!= NULL){
+        if(raiz->valor == valor){
+            return 1;
+        }
+
+        raiz = raiz->proximo;
+    }
+
+    return 0;
+}
+
+//Complemento-------------------------------------------------------
+//Cria uma nova árvore com todos os elementos de uma árvore(r1) que não estão em outra(r2).
+NO * complementoArvore(NO * r1, NO * r2, NO * rcomp){
+
+    //Se o nó é vazio retorna
+    if(r1 == NULL){
+        return NULL;
+    }   
+
+    //Verifica se o valor do no pertence a arvore r2
+    int resultado = pertenceArvore(r1->valor, r2);
+
+    //Se não pertence, coloca na árvore:
+    if(!resultado){
+
+        //Se a árvore estiver vazia, esse nó será a raiz:
+        if(rcomp == NULL){
+            rcomp = iniciaArvore(r1->valor);
+        }else{
+
+            //Verifica se o pai do nó exsite na lista
+            resultado = pertenceArvore(r1->pai->valor, rcomp);
+            
+            if(resultado){
+                insereNoArvore(rcomp, r1->valor, r1->pai->valor);
+
+            //Se não tiver vazia, mas pai desse nó não existir, então o nó raiz será o pai desse nó.
+            }else{
+                insereNoArvore(rcomp, r1->valor, rcomp->valor);
+            }
+        }      
+    }
+
+    itemLista * p = r1->listaFilhos;
+
+    while(p != NULL){
+        complementoArvore(p->filho, r2, rcomp);
+        p = p->proximo;
+    }
+
+    return rcomp;
+}
+
 int main(){ 
 
     NO * r1 = iniciaArvore(2);
@@ -150,13 +325,33 @@ int main(){
     insereNoArvore(r1, 1, 5);
 
     insereNoArvore(r2, 12, 4);
-    insereNoArvore(r2, 2,  4);
+    // insereNoArvore(r2, 2,  4);
     insereNoArvore(r2, 9, 12);
     insereNoArvore(r2, 1, 4);
-
+    
     imprimeArvore(r1);
     printf("\n");
     imprimeArvore(r2);
+    printf("\n");
+
+    NO * raizSoma = NULL;
+    raizSoma = somaArvores(r1,r2, raizSoma);
+    printf("Raiz Soma: ");
+    imprimeArvore(raizSoma);
+    printf("\n");
+
+    NO * raizUniao = NULL;
+    raizUniao = unirArvores(r1, r2);
+    printf("Raiz União: ");
+    imprimeArvore(raizUniao);
+    printf("\n");
+
+    NO * raizComplemento = NULL;
+    raizComplemento = complementoArvore(r1,r2,raizComplemento);
+    printf("Raiz Complemento: ");
+    imprimeArvore(raizComplemento);
+    printf("\n");
+
 
     return 0;
 }
