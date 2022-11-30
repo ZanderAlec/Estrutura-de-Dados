@@ -101,9 +101,64 @@ void imprimeArvore(No* raiz){
 //E se adotados, por quem serão? pelo pai do nó excluído ou por seus irmãos?
 
 
+//Operações=======================================
+
+No * somaArvore(No * r1, No * r2, No * rSoma, int pai){
+
+    if(r1 == NULL || r2 == NULL){
+        return NULL;
+    }
+
+    int resultado = r1->valor + r2->valor;
+   
+    if(rSoma == NULL){
+        rSoma = inicializa(resultado);
+    }else{
+        inserir(rSoma, resultado, pai);
+    }
+
+    pai = resultado;
+
+    No * f1 = r1->primogenito;
+    No * f2 = r2->primogenito;
+    
+    while(f1 != NULL && f2 !=NULL){
+        somaArvore(f1, f2, rSoma, pai);
+
+        f1 = f1->irmao;
+        f2 = f2->irmao;
+    }
+
+    return rSoma;
+}
+
 int main(){
 
+    //Cria o primeiro nó da árvore.
+    No* raiz = inicializa(5); 
+    No* raiz2 = inicializa(6); 
+    
+    inserir(raiz, 6, 5);
+    inserir(raiz, 10, 5);
+    inserir(raiz, 20, 5);
+    inserir(raiz, 8, 6);
+    inserir(raiz, 4, 6);
 
-    No* raiz = inicializa(8); //Cria o primeiro nó da árvore.
+    inserir(raiz2, 9, 6);
+    inserir(raiz2, 10, 6);
+    
+
+    imprimeArvore(raiz);
+    printf("\n");
+    imprimeArvore(raiz2);
+    printf("\n");
+
+
+    No * arvoreSoma = NULL;
+    arvoreSoma = somaArvore(raiz, raiz2, arvoreSoma, 0);
+    imprimeArvore(arvoreSoma);
+
+    printf("\n");
+
     return 0;
 }
