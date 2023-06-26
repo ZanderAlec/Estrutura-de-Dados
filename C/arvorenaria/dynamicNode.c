@@ -3,7 +3,7 @@
 
 /*  
      Essa implementação é basicamente indentica a lista de filhos, cada nó vai ter armazenado um 
-     valor um ponteiro para uma lista linkada de ponteiros que apontam para os filhos desse nó.
+     valor e um ponteiro para uma lista linkada de ponteiros que apontam para os filhos desse nó.
     A principal diferença entre as implementações está no fato de que no dynamic node os nós não 
     estão contidos em uma lista linkada como era na lista de filhos.
 */

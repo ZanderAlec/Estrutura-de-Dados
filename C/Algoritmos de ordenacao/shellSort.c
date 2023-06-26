@@ -9,7 +9,6 @@
 //Os valores de h mudam ao longo da execução do looping.
 //Quando h = 1, shell sort funcionará igual o insertion, porém será mais rápido, pois o vetor ja está mais ou menos ordenado.
 
-
 int main(){
 
     int numeros[10];
