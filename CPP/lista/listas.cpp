@@ -1,5 +1,6 @@
 #include <iostream>
 #include "arrayList.h"
+#include "linkedList.h"
 
 using namespace std;
 
@@ -23,6 +24,7 @@ using namespace std;
 
 int main(){
 
+    //testes-----------------------------
     Array_list lista1 {5};
 
     cout << "Size: " <<  lista1.length() << endl;
@@ -72,5 +74,24 @@ int main(){
     lista1.clear();
     lista1.print_list();
 
+    cout << endl;
+
+    LinkedList lista2;
+
+    lista2.is_empty();
+    cout << "size: " << lista2.list_lenght() << endl;
+
+    lista2.insereNo(66);
+    lista2.print_list();
+
+    lista2.insereNo(24);
+    lista2.insereNo(82);
+    lista2.print_list();
+
+    cout << "size: " << lista2.list_lenght() << endl;
+    
+    lista2.exclui_no(1);
+    lista2.print_list();
+    cout << "size: " << lista2.list_lenght() << endl;
     return 0;
 }
