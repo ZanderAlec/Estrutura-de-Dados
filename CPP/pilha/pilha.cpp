@@ -11,11 +11,10 @@ using namespace std;
     push -> Operação de inserir um elemento no inicio/final da pilha.
     pop -> Operação de remover um elemento do final da pilha.
 
-    //Uma pilha pode ser implementada array-based ou com ponteiros.
+    //Uma pilha pode ser implementada array-based ou com ponteiros(lista linkada).
         ps:Array-based precisam de operações complexas quando ultrapassam o tamanho máximo.
 
     Pilha -> O primeiro a entrar é o último a sair. Ex: pilha de pratos.
-    Fila -> variação da pilha no qual o primeiro a chegar é o primeiro a sair.
 
 */
 
