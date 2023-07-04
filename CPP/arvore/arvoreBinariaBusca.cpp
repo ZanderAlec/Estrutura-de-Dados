@@ -38,9 +38,6 @@ private:
 
     void print_tree(Node*&node);
 
-     /*Encontra o pai(nó anterior) de um nó*/
-    Node * find_Dad(Node*&temp);
-
     //procura o elemento que será removido.
     void remove_search(int, Node*&temp);
 
@@ -177,29 +174,6 @@ void BinarySearchTree::insert_node(int v){
     temp = nullptr;
 }
 
-
-Node * BinarySearchTree::find_Dad(Node*&temp){
-    Node * dad = root;
-
-    while(true){
-
-        //Se algum dos filhos é o valor procurado:
-        if(dad-> left_child->value == temp->value || dad->right_child->value == temp->value){
-            break;
-        }
-
-        //Se não entra em um dos filhos
-        if(temp->value > dad->value){
-            dad = dad->right_child;
-
-        }else if(temp->value < dad->value){
-            dad = dad->left_child;
-        }
-    }
-
-    return dad;
-}
-
 void BinarySearchTree::remove_node(int v){
     remove_search(v, root);
 }
@@ -221,39 +195,43 @@ void BinarySearchTree::remove_search(int v, Node*& atual){
 
 void BinarySearchTree::delete_node(Node*& atual){
     
+    //Guarda o antigo atual.
     Node * temp = atual;
 
+    //Se só tem um filho------------------------
     if(atual->left_child == NULL){
 
+        //o pai do atual agora aponta para o filho esquerdo do atual.
         atual = atual->right_child;
 
     }else if(atual->right_child == NULL){
 
+        //o pai do atual agora aponta para o filho direito do atual.
         atual = atual->left_child;
-        
-    }else{
 
-        // Node * dad = find_Dad(atual);
+     //Se tem dois filhos------------------------
+    }else{  
 
-        // if(dad->value > atual->value){
-        //     dad->left_child = atual->right_child;
+        //Guarda o filho esquerdo(menor)
+        Node * temp2 = atual->left_child;
 
-        // }else{
-        //     dad->right_child = atual->right_child;
-        // }
+        //o pai do atual agora aponta para o filho esquerdo do atual.
+        atual = atual->right_child;
 
-        // Node * temp2 = dad->right_child;
+        Node * temp3 = atual;
 
-        // while(temp2->left_child){
-        //     temp2 = temp2->left_child;
-        // }
+        //Procura na lista de filhos do novo atual um filho esquerdo que não tenha filho
+        while(temp3->left_child){
+            temp3 = temp3->left_child;
+        }
 
-        // temp2->left_child = atual->left_child;
+        temp3->left_child = temp2;
 
-        // temp2 = nullptr;
+        temp2 = nullptr;
+        temp3 = nullptr;
     }
 
-    // delete temp;
+    delete temp;
 }
 
 
@@ -270,7 +248,11 @@ int main(){
 
     arvore.print();
 
-    arvore.remove_node(5);
+    arvore.remove_node(2);
+
+    arvore.print();
+
+    arvore.remove_node(12);
 
     arvore.print();
 
