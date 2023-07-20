@@ -42,12 +42,16 @@ public:
 
     //Métodos da heap------------
 
+    void printHeap();
+
+
     //Transforma uma arvore em heap.
     //No caso, coloca todos os nós, como os índices do array.
     //O processo ocorre por camadas, todos os nós da camada são colocados um após o outro até o fim da árvore.
     
-    //Ordena o vetor em ordem crescente de valores.
-    void minHeapify();
+    //recebe um index e troca ele de lugar, no caso da min-heap, com um filho que seja MENOR que ele.
+    //É utilizado quando o menor elemento é removido do array, dessa forma, o último elemento toma o lugar do antigo menor e o array é rearranjado
+    void minHeapify(int);
 
     //Verifica se a heap está cheia
     bool is_full();
@@ -67,7 +71,10 @@ public:
     //Remove o elemento raiz do vetor
     int releaseMin();
 
-    //Deleta um valor na heap
+    //Muda o valor de um index e o posiciona na posição correta
+    void decreaseKey(int, int);
+
+    //Deleta um valor na heap no index passado
     void deleteKey(int);
 
     //Insere um valor na heap
@@ -81,6 +88,14 @@ MinHeap::MinHeap(int max)
 
 MinHeap::~MinHeap(){
     delete [] heap_array;
+}
+
+void MinHeap::printHeap(){
+    for(int i =0 ; i < heap_size; i++){
+        cout << heap_array[i] << " ";
+    }
+
+    cout << endl;
 }
 
 int MinHeap::getParent(int index){
@@ -115,6 +130,7 @@ int MinHeap::releaseMin(){
     int min = heap_array[0];
     heap_array[0] = heap_array[heap_size -1];
     heap_size--;
+    minHeapify(0);
 
     return min;
 }
@@ -152,11 +168,86 @@ void MinHeap::insertKey(int value){
     }
 }
 
-void MinHeap::minHeapify(){
+void MinHeap::minHeapify(int i){
+    
+    //O valor recebido é dado como menor, se ele se manter assim até o final, o vetor esta ordenado.
+    int smallest = i;
+    int lc = getLeftChild(i);
+    int rc = getRightChild(i);
 
+    //Se o filho esquerdo é menor que o pai informado(i)
+    if(lc < heap_size && heap_array[lc] < heap_array[i])
+        smallest = lc;
+
+    //Se o filho esquerdo é menor que o pai informado(i) ou o filho direto
+    if(rc < heap_size && heap_array[rc] < heap_array[smallest])
+        smallest = rc;
+    
+    //Se não foi alterado, encerra
+    if(smallest != i){
+        //Troca de lugar
+        int temp = heap_array[i];
+        heap_array[i] = heap_array[smallest];
+        heap_array[smallest] = temp;
+
+        //Chama novamente pro novo menor
+        minHeapify(smallest);
+    } 
 };
 
+void MinHeap::decreaseKey(int i, int val){
+    heap_array[i] = val;
+
+    //O elemento é posicionado de forma a atender a prioridade
+    //O posicionamento leva em conta apenas os pais dos índices, visto que trata-se na verdade de uma ÁRVORE binária.
+    //Portanto, se temos a ÁRVORE binária o programa considera que os filhos são sempre menores que os pais.
+    while(i != 0){
+        int dad = getParent(i);
+        if(heap_array[dad] < heap_array[i]) break;
+        
+        else{
+            int temp = heap_array[dad];
+            heap_array[dad] = heap_array[i];
+            heap_array[i] = temp;
+        }
+
+        i = dad;
+    }
+}
+
+void MinHeap::deleteKey(int i){
+    decreaseKey(i, INT_MIN);
+    releaseMin();
+}
+
 int main(){
+
+    MinHeap h{8};
+
+    cout << h.is_full() << endl;
+
+    h.insertKey(11);
+
+    h.printHeap();
+
+    h.insertKey(3);
+    h.insertKey(2);
+    h.insertKey(1);
+    h.insertKey(15);
+    h.insertKey(5);
+    h.insertKey(4);
+    h.insertKey(45);
+
+    h.printHeap();
+
+    cout << h.releaseMin() << endl;
+    cout << h.returnMin() << endl;
+
+    h.printHeap();
+
+    h.deleteKey(3);
+
+    h.printHeap();
 
     return 0;
 }
